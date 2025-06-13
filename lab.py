@@ -36,7 +36,8 @@ def make_new_game(level_description):
     The exact choice of representation is up to you; but note that what you
     return will be used as input to the other functions.
     """
-    raise NotImplementedError
+    copied_game = [[[item for item in cell] for cell in row] for row in level_description]
+    return copied_game
 
 
 def victory_check(game):
@@ -45,7 +46,7 @@ def victory_check(game):
     return a Boolean: True if the given game satisfies the victory condition,
     and False otherwise.
     """
-    raise NotImplementedError
+    pass
 
 
 def step_game(game, direction):
@@ -58,7 +59,32 @@ def step_game(game, direction):
 
     This function should not mutate its input.
     """
-    raise NotImplementedError
+    match = make_new_game(game)
+    for idx, i in enumerate(match):
+        for idx2, j in enumerate(i):
+            if "player" in j: 
+                if direction in DIRECTION_VECTOR:
+                    dx, dy = DIRECTION_VECTOR[direction]
+                    new_x = idx + dx
+                    new_y = idx2 + dy
+
+    # Check bounds
+                if 0 <= new_x < len(match) and 0 <= new_y < len(match[0]):
+                    destination = match[new_x][new_y]
+                    if "wall" not in destination and "computer" not in destination:
+                        match[new_x][new_y].append("player")
+                        match[idx][idx2].remove("player")
+                        return match
+                    if "computer" in destination:
+                        if 0 <= new_x + dx < len(match) and 0 <= new_y + dy < len(match[0]):
+                            if ( 'wall' not in match[new_x + dx] and 'wall' not in  match[new_y + dy] and 'computer' not in match[new_x + dx] and 'computer' not in  match[new_y + dy]):
+                                match[new_x][new_y].append("player")
+                                match[idx][idx2].remove("player") 
+                                match[new_x + dx][new_y + dy].append("computer")
+                                match[new_x][new_y].remove("computer")
+                                return match
+
+   
 
 
 def dump_game(game):
@@ -72,8 +98,7 @@ def dump_game(game):
     print out the current state of your game for testing and debugging on your
     own.
     """
-    raise NotImplementedError
-
+    return game
 
 def solve_puzzle(game):
     """
