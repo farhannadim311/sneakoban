@@ -46,7 +46,19 @@ def victory_check(game):
     return a Boolean: True if the given game satisfies the victory condition,
     and False otherwise.
     """
-    pass
+    target_counter = 0
+    count = 0
+    for i in game:
+        for j in i:
+            if("target" in j and "computer" in j):
+                count += 1
+            if ("target" in j):
+                target_counter += 1
+    
+    if (count == 0):
+        return False
+    return (target_counter == count)
+
 
 
 def step_game(game, direction):
@@ -75,16 +87,19 @@ def step_game(game, direction):
                         match[new_x][new_y].append("player")
                         match[idx][idx2].remove("player")
                         return match
-                    if "computer" in destination:
+                    
+                    elif "computer" in destination:
                         if 0 <= new_x + dx < len(match) and 0 <= new_y + dy < len(match[0]):
-                            if ( 'wall' not in match[new_x + dx] and 'wall' not in  match[new_y + dy] and 'computer' not in match[new_x + dx] and 'computer' not in  match[new_y + dy]):
+                            if ('wall' not in match[new_x + dx][new_y + dy] and 'computer' not in match[new_x + dx][new_y + dy]):
                                 match[new_x][new_y].append("player")
                                 match[idx][idx2].remove("player") 
                                 match[new_x + dx][new_y + dy].append("computer")
                                 match[new_x][new_y].remove("computer")
                                 return match
-
-   
+                            else:
+                                return match
+                    else:
+                        return match
 
 
 def dump_game(game):
@@ -110,7 +125,36 @@ def solve_puzzle(game):
 
     If the given level cannot be solved, return None.
     """
-    raise NotImplementedError
+    match = make_new_game(game)
+    sequence = moves(match)
+
+
+
+
+def sequence_state(game):
+    match = make_new_game(game)
+    sequence = [match]
+    agenda = [match]
+    idx = 0
+    while (agenda):
+        path = agenda.pop(0)
+        for i in DIRECTION_VECTOR:
+            if (victory_check(path)):
+                return sequence
+            sequence.append(step_game(match, i))
+            agenda.append(step_game(match, i))
+    return None
+
+def moves(game):
+    sequence = sequence_state(game)
+    temp = []
+    move_seq = []
+    for i in sequence:
+        for k in DIRECTION_VECTOR:
+            if(step_game(k) == i):
+                temp.append(k)
+        
+    return moves
 
 
 if __name__ == "__main__":
